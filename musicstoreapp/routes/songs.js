@@ -22,6 +22,12 @@ module.exports = function (app) {
         };
         res.render("shop.twig", response);
     });
+    app.post('/songs/add', function (req, res) {
+        let response = "Canción agregada: " + req.body.title + "<br>"
+            + " genero: " + req.body.kind + "<br>"
+            + " precio: " + req.body.price;
+        res.send(response);
+    });
     app.get('/songs/add', function (req, res) {
         res.render("add.twig");
     });

@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 require("./routes/songs.js")(app);
+require("./routes/authors.js")(app);
 
 
 // view engine setup
