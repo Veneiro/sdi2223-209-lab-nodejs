@@ -41,8 +41,11 @@ app.use("/publications",userSessionRouter);
 app.use("/audios/",userAudiosRouter);
 app.use("/songs/",userSessionRouter)
 let songsRepository = require("./repositories/songsRepository.js");
+let commentsRepository = require("./repositories/commentsRepository.js");
 songsRepository.init(app, MongoClient);
-require("./routes/songs.js")(app, songsRepository);
+commentsRepository.init(app, MongoClient);
+require("./routes/comment.js")(app, commentsRepository);
+require("./routes/songs.js")(app, songsRepository, commentsRepository);
 require("./routes/authors.js")(app);
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);

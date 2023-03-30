@@ -35,7 +35,8 @@ module.exports = function (app, usersRepository) {
         res.send("Usuario no identificado");
       } else {
         req.session.user = user.email;
-        res.send("Usuario identificado correctamente: " + user.email);
+        res.redirect("/songs");
+        //res.send("Usuario identificado correctamente: " + user.email);
       }
     }).catch(error => {
       req.session.user = null;

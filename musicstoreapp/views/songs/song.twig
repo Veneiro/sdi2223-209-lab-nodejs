@@ -17,4 +17,32 @@
 		  </div>
 		</div>
 	  </div>
+	<form class="form-horizontal" method="post" action="/comments/{{song._id}}">
+		<div class="form-group">
+		<input id="textComment" type="text" class="form-control" placeholder="Escribe tu comentario..." name="textComment" required/>
+			<button type="submit" class="btn btn-primary">Añadir</button>
+		</div>
+	</form>
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+			<tr>
+				<th>Autor</th>
+				<th>Comentario</th>
+				<th class="col-md-1"></th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for comment in comments %}
+				<tr>
+					<td> {{ comment.user }} </td>
+					<td>{{ comment.textComment }}</td>
+					<td>
+						<a href="/comments/delete/{{ comment._id }}">Eliminar</a> <br>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
 {% endblock %}
