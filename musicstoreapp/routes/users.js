@@ -13,9 +13,15 @@ module.exports = function (app, usersRepository) {
       password: securePassword
     }
     usersRepository.insertUser(user).then(userId => {
-      res.send('Usuario registrado ' + userId);
+      //res.send('Usuario registrado ' + userId);
+      res.redirect("/users/login" +
+          '?message=Nuevo usuario registrado.' +
+          "&messageType=alert-info")
     }).catch(error => {
-      res.send("Error al insertar el usuario");
+      //res.send("Error al insertar el usuario");
+      res.redirect("/users/login" +
+          '?message=Se ha producido un error al registrar el usuario.' +
+          "&messageType=alert-danger")
     });
   });
   app.get('/users/login', function (req, res) {
@@ -32,7 +38,8 @@ module.exports = function (app, usersRepository) {
     usersRepository.findUser(filter, options).then(user=> {
       if (user == null) {
         req.session.user = null;
-        res.send("Usuario no identificado");
+        //res.send("Usuario no identificado");
+        res.redirect("/users/login" + "?message=Email o password incorrecto" + "&messageType=alert-danger ");
       } else {
         req.session.user = user.email;
         res.redirect("/publications");
@@ -44,7 +51,8 @@ module.exports = function (app, usersRepository) {
   });
   app.get('/users/logout', function (req, res) {
     req.session.user = null;
-    res.send("El usuario se ha desconectado correctamente");
+    //res.send("El usuario se ha desconectado correctamente");
+    res.redirect("/users/login" + "?message=Se ha producido un error al buscar el usuario" + "&messageType=alert-danger ");
   });
 }
 
