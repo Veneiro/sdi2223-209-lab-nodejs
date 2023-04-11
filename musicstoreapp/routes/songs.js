@@ -147,4 +147,16 @@ module.exports = function (app, songsRepository, commentsRepository) {
             + 'Tipo de música: ' + req.params.kind;
         res.send(response);
     });
+    app.get('/songs/delete/:id', function (req, res) {
+        let filter = {_id: ObjectId(req.params.id)};
+        songsRepository.deleteSong(filter, {}).then(result => {
+            if (result === null || result.deletedCount === 0) {
+                res.send("No se ha podido eliminar el registro");
+            } else {
+                res.redirect("/publications");
+            }
+        }).catch(error => {
+            res.send("Se ha producido un error al intentar eliminar la canción: " + error)
+        });
+    });
 };

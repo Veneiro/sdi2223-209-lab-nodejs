@@ -40,6 +40,11 @@ app.use("/songs/add",userSessionRouter);
 app.use("/publications",userSessionRouter);
 app.use("/audios/",userAudiosRouter);
 app.use("/songs/",userSessionRouter)
+
+const userAuthorRouter = require('./routes/userAuthorRouter');
+app.use("/songs/edit", userAuthorRouter);
+app.use("/songs/delete", userAuthorRouter);
+
 let songsRepository = require("./repositories/songsRepository.js");
 let commentsRepository = require("./repositories/commentsRepository.js");
 songsRepository.init(app, MongoClient);
