@@ -38,6 +38,8 @@ const userSessionRouter = require('./routes/userSessionRouter.js');
 const userAudiosRouter = require('./routes/userAudiosRouter.js');
 app.use("/songs/add",userSessionRouter);
 app.use("/publications",userSessionRouter);
+app.use("/songs/buy",userSessionRouter);
+app.use("/purchases",userSessionRouter);
 app.use("/audios/",userAudiosRouter);
 app.use("/songs/",userSessionRouter)
 
