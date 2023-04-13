@@ -82,10 +82,14 @@ module.exports = function (app, songsRepository, commentsRepository) {
     app.get('/songs/:id', function (req, res) {
         let filter = {_id: ObjectId(req.params.id)};
         let options = {_id: ObjectId(req.params.id)};
+        let user = req.session.user;
+
         songsRepository.findSong(filter, {}).then(song => {
-            commentsRepository.getComments({}, options).then(comments =>{
-                res.render("songs/song.twig", {song: song, comments: comments});
-            })
+            canBuy(user, song._id, function(canBuy) {
+                commentsRepository.getComments({}, options).then(comments =>{
+                    res.render("songs/song.twig", {song: song, comments: comments, canBuy: canBuy});
+                })
+            });
         }).catch(error => {
             res.send("Se ha producido un error al buscar la canción " + error)
         });
@@ -179,14 +183,40 @@ module.exports = function (app, songsRepository, commentsRepository) {
     app.get('/songs/buy/:id', function (req, res) {
         let songId = ObjectId(req.params.id);
         let shop = {user: req.session.user, songId: songId}
-        songsRepository.buySong(shop, function (shopId) {
-            if (shopId == null) {
-                res.send("Error al realizar la compra");
+        let user = req.session.user;
+        canBuy(user, songId, function(canBuy) {
+            if(canBuy) {
+                songsRepository.buySong(shop, function (shopId) {
+                    if (shopId == null) {
+                        res.send("Error al realizar la compra");
+                    } else {
+                        res.redirect("/purchases");
+                    }
+                });
             } else {
-                res.redirect("/purchases");
+                res.send("Se ha producido un error al comprar la canción o ya es tuya");
             }
         })
     });
+
+    function canBuy(author, songId, callback){
+        let filterSongs = {author: author, _id: songId}
+        let filterPurchases = {user: author, songId: songId}
+        songsRepository.getSongs(filterSongs, "").then(songs => {
+            if(songs === null || songs.length > 0){
+                callback(false);
+            } else {
+                songsRepository.getPurchases(filterPurchases, "").then(purchases => {
+                   if(purchases === null || purchases.length > 0){
+                       callback(false);
+                   } else {
+                       callback(true);
+                   }
+                });
+            }
+        });
+    }
+
     app.get('/purchases', function (req, res) {
         let filter = {user: req.session.user};
         let options = {projection: {_id: 0, songId: 1}};
