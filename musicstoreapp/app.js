@@ -8,6 +8,8 @@ var indexRouter = require('./routes/index');
 
 
 var app = express();
+let jwt = require('jsonwebtoken');
+app.set('jwt', jwt);
 
 let expressSession = require('express-session');
 app.use(expressSession({
@@ -47,17 +49,20 @@ const userAuthorRouter = require('./routes/userAuthorRouter');
 app.use("/songs/edit", userAuthorRouter);
 app.use("/songs/delete", userAuthorRouter);
 
+const userTokenRouter = require('./routes/userTokenRouter');
+app.use("/api/v1.0/songs/", userTokenRouter);
+
 let songsRepository = require("./repositories/songsRepository.js");
 let commentsRepository = require("./repositories/commentsRepository.js");
 songsRepository.init(app, MongoClient);
 commentsRepository.init(app, MongoClient);
 require("./routes/comment.js")(app, commentsRepository);
 require("./routes/songs.js")(app, songsRepository, commentsRepository);
-require("./routes/api/songsAPIv1.0.js")(app, songsRepository);
 require("./routes/authors.js")(app);
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
 require("./routes/users.js")(app, usersRepository);
+require("./routes/api/songsAPIv1.0.js")(app, songsRepository, usersRepository);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
