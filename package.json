@@ -12,6 +12,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.1.2",
     "morgan": "^1.10.0",
+    "request": "^2.88.2",
     "twig": "^1.16.0"
   }
 }
