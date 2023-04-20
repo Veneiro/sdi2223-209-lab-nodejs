@@ -58,13 +58,21 @@ module.exports = function (app, songsRepository, usersRepository) {
         try {
             let song = {title: req.body.title, kind: req.body.kind, price: req.body.price, author: req.session.user}
             // Validar aquí: título, género, precio y autor.
-            songsRepository.insertSong(song, function (songId) {
-                if (songId === null) {
-                    res.status(409);
-                    res.json({error: "No se ha podido crear la canción. El recurso ya existe."});
+            validateInsertSong(song, function (errors)
+            {
+                if (errors !== null && errors.length > 0) {
+                    res.status(422);
+                    res.json({errors: errors})
                 } else {
-                    res.status(201);
-                    res.json({message: "Canción añadida correctamente.", _id: songId})
+                    songsRepository.insertSong(song, function (songId) {
+                        if (songId === null) {
+                            res.status(409);
+                            res.json({error: "No se ha podido crear la canción. El recurso ya existe."});
+                        } else {
+                            res.status(201);
+                            res.json({message: "Canción añadida correctamente.", _id: songId})
+                        }
+                    });
                 }
             });
         } catch (e) {
@@ -143,4 +151,45 @@ module.exports = function (app, songsRepository, usersRepository) {
             })
         }
     });
+
+    function validateInsertSong(song, callbackFunction){
+        let errors = new Array();
+        if(song.title === null || typeof song === 'undefined' || song.title.trim().length == 0){
+            errors.push({
+               "value": song.title,
+               "msg": "El título de la canción no puede estar vacío",
+               "param": "title",
+               "location": "body"
+            });
+        }
+        if(song.kind === null || typeof song === 'undefined' || song.kind.trim().length == 0){
+            errors.push({
+                "value": song.kind,
+                "msg": "El género de la canción no puede estar vacío",
+                "param": "kind",
+                "location": "body"
+            });
+        }
+        if(song.price === null || typeof song === 'undefined' || song.price.toString().trim().length == 0){
+            errors.push({
+                "value": song.price,
+                "msg": "El precio de la canción no puede estar vacío",
+                "param": "price",
+                "location": "body"
+            });
+        }
+        if(song.price < 0){
+            errors.push({
+                "value": song.price,
+                "msg": "El precio de la canción no puede ser negativo",
+                "param": "price",
+                "location": "body"
+            });
+        }
+        if(errors === null || errors.length > 0){
+            callbackFunction(errors);
+        } else {
+            callbackFunction(null);
+        }
+    }
 }

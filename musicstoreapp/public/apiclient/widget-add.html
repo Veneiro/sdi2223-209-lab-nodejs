@@ -1,4 +1,4 @@
-<div id="widget-agregar">
+<div id="widget-add">
     <div class="form-group"><label class="control-label col-sm-2" for="title-add">Nombre:</label>
         <div class="col-sm-10"><input type="text" class="form-control" name="title-add"
                                       placeholder="Título de la canción" id="title-add"/></div>
@@ -26,7 +26,19 @@
       console.log(response); // <-- Prueba
       $("#main-container").load("widget-songs.html");
     }, error: function (error) {
-      $("#main-container").load("widget-login.html");
+        console.log(error);
+        $("#div-errors").remove();
+        let current_error = (typeof error.responseJSON.errors == "undefined") ? null : error.responseJSON.errors;
+        if(current_error != null){
+            $("#widget-add").prepend("<div id='div-errors' class ='alert alert-danger'><ul id='ul-errors'></ul></div>");
+            for(let i = 0; i < current_error.length; i++){
+                $("#ul-errors").append("<li>" + current_error[i].msg + "</li>");
+            }
+        } else {
+            $("#widget-add").prepend("<div id = 'div-errors' class='alert alert-danger'>Se ha producido un error inesperado</div>")
+        }
+      //$("#main-container").load("widget-login.html");
+
     }
   });
 } </script>
